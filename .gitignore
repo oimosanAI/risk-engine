@@ -6,3 +6,5 @@ data/processed/
 results/
 .ipynb_checkpoints/
 .env
+.coverage
+.pytest_cache/
