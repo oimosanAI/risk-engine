@@ -17,11 +17,16 @@ Conventions (do not violate):
 from __future__ import annotations
 
 import logging
-import math
 from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+
+# _clean and _min_obs are shared, distribution-agnostic helpers; they live in
+# _utils so sibling estimator modules depend on a neutral module, not on each
+# other. Re-exported here so existing `src.var.historical._clean/_min_obs`
+# references keep resolving.
+from src.var._utils import _clean, _min_obs
 
 logger = logging.getLogger(__name__)
 
@@ -52,20 +57,6 @@ def _validate_params(confidence: float, interpolation: str, horizon: int) -> Non
         )
     if horizon < 1:
         raise ValueError(f"horizon must be a positive integer, got {horizon}")
-
-
-def _min_obs(confidence: float) -> int:
-    """Minimum sample size for the ``(1 - c)`` tail to contain >= 1 observation."""
-    return math.ceil(1.0 / (1.0 - confidence))
-
-
-def _clean(returns: pd.Series) -> pd.Series:
-    """Drop NaNs, logging the dropped count. Never silently swallow them."""
-    n_nan = int(returns.isna().sum())
-    if n_nan:
-        logger.warning("Dropping %d NaN observation(s) from return series", n_nan)
-        returns = returns.dropna()
-    return returns
 
 
 def _aggregate_horizon(returns: pd.Series, horizon: int) -> pd.Series:
