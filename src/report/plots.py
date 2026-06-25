@@ -162,14 +162,16 @@ def plot_stress_wealth(
     ax.axhline(1.0, color=COLOR_LOSS, linewidth=0.8, linestyle="--")
 
     mdd, trough = _max_drawdown(wealth)
+    # Place the label ABOVE-LEFT of the trough (inside the plot), never below it
+    # where it would collide with the x-axis tick labels for a near-edge trough.
     ax.annotate(
         f"trough -{mdd:.1%}",
         xy=(trough, wealth.loc[trough]),
-        xytext=(0, -24),
+        xytext=(-10, 20),
         textcoords="offset points",
         color=COLOR_VAR,
         fontsize=8,
-        ha="center",
+        ha="right",
         arrowprops=dict(arrowstyle="->", color=COLOR_VAR, lw=0.7),
     )
 
