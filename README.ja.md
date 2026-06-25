@@ -1,5 +1,7 @@
 # リスクエンジン
 
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg) ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg) ![tests](https://img.shields.io/badge/tests-144%20passing-brightgreen.svg) ![ruff](https://img.shields.io/badge/lint-ruff-blue.svg) ![code style](https://img.shields.io/badge/code%20style-black-black.svg)
+
 ヒストリカル・シミュレーション、パラメトリック（正規 / スチューデント $t$）クローズドフォーム、
 そしてヒストリカルなストレス再現によって、バリュー・アット・リスク（VaR）と期待ショートフォール
 （ES）を計算するポートフォリオ・リスクエンジンです。統計的バックテストとモノクロのレポート層を
@@ -114,8 +116,11 @@ $$\text{MDD} = \max_t \frac{\text{peak}_t - W_t}{\text{peak}_t},$$
 **等価テスト** — $t$ のローリング行は、ちょうど `returns.iloc[i-window:i]` 上で実行した時点推定器と数値的に
 同一であることが、複数の日付と信頼水準にわたって表明されます。両者が同じ数値コアを通るためです。
 
-解決不能な裾の下限 $\text{MIN\_OBS}(c) = \lceil 1/(1-c)\rceil$（$c=0.99$ で 100）は至る所で強制されます。
-これを下回ると $(1-c)$ 分位点は経験推定を装った純粋な外挿になり、`ValueError` が送出されます。
+解決不能な裾の下限（コードでは `MIN_OBS`）は至る所で強制されます：
+
+$$n_{\min}(c) = \left\lceil \frac{1}{1-c} \right\rceil$$
+
+$c = 0.99$ ではこれは 100 です。これを下回ると $(1-c)$ 分位点は経験推定を装った純粋な外挿になり、`ValueError` が送出されます。
 
 ---
 

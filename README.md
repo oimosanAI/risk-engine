@@ -1,5 +1,7 @@
 # Risk Engine
 
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg) ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg) ![tests](https://img.shields.io/badge/tests-144%20passing-brightgreen.svg) ![ruff](https://img.shields.io/badge/lint-ruff-blue.svg) ![code style](https://img.shields.io/badge/code%20style-black-black.svg)
+
 A portfolio risk engine computing Value-at-Risk (VaR) and Expected Shortfall (ES)
 by historical simulation, parametric (normal / Student-$t$) closed forms, and
 historical stress replay — with statistical backtesting and a monochrome reporting
@@ -132,9 +134,12 @@ that weaker check but fail this one.
 point-in-time estimator run on exactly `returns.iloc[i-window:i]`, across multiple dates
 and confidence levels, because both route through the same numeric core.
 
-The unresolvable-tail floor $\text{MIN\_OBS}(c) = \lceil 1/(1-c)\rceil$ (100 at $c=0.99$)
-is enforced everywhere: below it the $(1-c)$ quantile is pure extrapolation dressed as an
-empirical estimate, and a `ValueError` is raised.
+The unresolvable-tail floor (`MIN_OBS` in the code) is enforced everywhere:
+
+$$n_{\min}(c) = \left\lceil \frac{1}{1-c} \right\rceil$$
+
+At $c = 0.99$ this is 100. Below it the $(1-c)$ quantile is pure extrapolation dressed as
+an empirical estimate, and a `ValueError` is raised.
 
 ---
 
