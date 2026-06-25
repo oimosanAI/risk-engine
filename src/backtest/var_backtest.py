@@ -23,6 +23,10 @@ from dataclasses import dataclass
 import pandas as pd
 from scipy.stats import chi2
 
+# Single source of truth for the violation definition; re-exported here so
+# existing `var_backtest.violations` references keep resolving.
+from src.var._utils import violations
+
 logger = logging.getLogger(__name__)
 
 _MIN_OBS = 30
@@ -141,25 +145,6 @@ def _drop_aligned_nan(
         logger.warning("Dropping %d aligned NaN pair(s) before backtest", n_drop)
     keep = ~mask
     return returns[keep], var_series[keep]
-
-
-def violations(returns: pd.Series, var_series: pd.Series) -> pd.Series:
-    """Boolean series, True where the loss strictly exceeds VaR (-return > var).
-
-    Raises ValueError if the two indices are not identical. A negative value in
-    ``var_series`` (VaR should be a positive loss magnitude) is logged as a
-    possible caller sign error but does not raise.
-    """
-    if not returns.index.equals(var_series.index):
-        raise ValueError(
-            "returns and var_series must be date-aligned (identical index)"
-        )
-    if (var_series < 0).any():
-        logger.warning(
-            "var_series contains negative values; VaR should be positive loss "
-            "magnitudes (possible caller sign error)"
-        )
-    return -returns > var_series
 
 
 def backtest_var(

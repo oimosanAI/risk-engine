@@ -30,8 +30,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from src.backtest.var_backtest import violations
-from src.var._utils import _clean
+from src.var._utils import _clean, violations
 
 logger = logging.getLogger(__name__)
 
