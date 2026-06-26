@@ -46,7 +46,17 @@ jobs:
       - name: Run tests
         run: pytest tests/ -q --tb=short
 
-      # Coverage report. XML is emitted for a future codecov upload if desired;
+      # Coverage report. XML is emitted for the codecov upload below;
       # term-missing prints the real coverage and any missing lines in the log.
       - name: Coverage report
         run: pytest tests/ --cov=src --cov-report=xml --cov-report=term-missing -q
+
+      # fail_ci_if_error is false on purpose: a codecov outage must not break
+      # CI for the tests themselves, which have already passed at this point.
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          verbose: false

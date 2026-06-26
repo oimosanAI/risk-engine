@@ -1,7 +1,6 @@
 # リスクエンジン
 
-![Python](https://img.shields.io/badge/python-3.11+-blue.svg) ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg) ![tests](https://img.shields.io/badge/tests-144%20passing-brightgreen.svg) ![ruff](https://img.shields.io/badge/lint-ruff-blue.svg) ![code style](https://img.shields.io/badge/code%20style-black-black.svg) ![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)
-<!-- coverage badge: replace with codecov dynamic badge after first CI run -->
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg) ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg) ![tests](https://img.shields.io/badge/tests-144%20passing-brightgreen.svg) ![ruff](https://img.shields.io/badge/lint-ruff-blue.svg) ![code style](https://img.shields.io/badge/code%20style-black-black.svg) [![codecov](https://codecov.io/gh/oimosanAI/risk-engine/graph/badge.svg?token=LIDUHTHTSA)](https://codecov.io/gh/oimosanAI/risk-engine)
 
 ヒストリカル・シミュレーション、パラメトリック（正規 / スチューデント $t$）クローズドフォーム、
 そしてヒストリカルなストレス再現によって、バリュー・アット・リスク（VaR）と期待ショートフォール
