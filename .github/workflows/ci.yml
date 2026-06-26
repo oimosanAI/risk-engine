@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt', 'requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check src/ tests/
+
+      - name: Format check (black)
+        run: black --check src/ tests/
+
+      # Integration tests make yfinance network calls and are excluded from CI
+      # by pytest.ini (addopts = -m "not integration"), so no -m flag is needed
+      # here -- a plain `pytest` run stays fully offline and deterministic.
+      - name: Run tests
+        run: pytest tests/ -q --tb=short
+
+      # Coverage report. XML is emitted for a future codecov upload if desired;
+      # term-missing prints the real coverage and any missing lines in the log.
+      - name: Coverage report
+        run: pytest tests/ --cov=src --cov-report=xml --cov-report=term-missing -q
