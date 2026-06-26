@@ -157,8 +157,9 @@ src/
 var._utils          (scipy-free leaf: _clean, _min_obs, violations)
     ↑                   ↑               ↑
 var.historical   var.parametric    stress.scenarios    report.plots
+                  (scipy)
                       ↑
-               var_backtest  (only scipy importer in the engine layer)
+               var_backtest  (scipy)
 ```
 
 `var._utils` is the single source of truth for the shared logic used across
@@ -167,6 +168,9 @@ Every layer routes through it rather than re-deriving these, so the statistics
 and the visualizations can never diverge.
 
 `report.plots` is intentionally scipy-free: importing it does not pull scipy,
-keeping the visualization layer lightweight. `var_backtest` is the only module
-in the engine layer that imports scipy (for the chi-square survival function
+keeping the visualization layer lightweight. Two modules import scipy:
+`var.parametric` (for the `norm` and Student-`t` quantiles and pdf in the
+closed-form VaR/ES) and `var_backtest` (for the chi-square survival function
 used by the Kupiec, Christoffersen, and conditional-coverage p-values).
+`data.loader`, `var.historical`, `stress.scenarios`, and `report.plots` are
+all scipy-free.

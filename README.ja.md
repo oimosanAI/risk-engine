@@ -59,13 +59,17 @@ src/
 var._utils          (scipy-free leaf: _clean, _min_obs, violations)
     ↑                   ↑               ↑
 var.historical   var.parametric    stress.scenarios    report.plots
+                  (scipy)
                       ↑
-               var_backtest  (only scipy importer in the engine layer)
+               var_backtest  (scipy)
 ```
 
 `report.plots` は意図的に scipy 非依存です。インポートしても scipy を引き込まず、
-可視化層を軽量に保ちます。`var._utils` はモジュール間で共有されるロジックの
-単一の真実の源（single source of truth）です。
+可視化層を軽量に保ちます。scipy をインポートするのは `var.parametric`
+（クローズドフォームの `norm` / スチューデント `t`）と `var_backtest`
+（カイ二乗 p 値）の 2 つだけで、その他のモジュールはすべて scipy 非依存です。
+`var._utils` はモジュール間で共有されるロジックの単一の真実の源
+（single source of truth）です。
 
 すべての非自明な設計判断の根拠については、[DESIGN.md](docs/DESIGN.md) を参照してください。
 

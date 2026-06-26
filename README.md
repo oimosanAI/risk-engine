@@ -65,12 +65,15 @@ src/
 var._utils          (scipy-free leaf: _clean, _min_obs, violations)
     ↑                   ↑               ↑
 var.historical   var.parametric    stress.scenarios    report.plots
+                  (scipy)
                       ↑
-               var_backtest  (only scipy importer in the engine layer)
+               var_backtest  (scipy)
 ```
 
 `report.plots` is intentionally scipy-free: importing it does not pull
-scipy, keeping the visualization layer lightweight. `var._utils` is the
+scipy, keeping the visualization layer lightweight. Only `var.parametric`
+(closed-form `norm` / Student-`t`) and `var_backtest` (chi-square p-values)
+import scipy; every other module is scipy-free. `var._utils` is the
 single source of truth for shared logic used across modules.
 
 For the full rationale behind every non-obvious design choice, see
