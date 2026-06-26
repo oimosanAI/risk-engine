@@ -133,3 +133,40 @@ via `var_backtest.violations()`, which lives in `_utils.py` as the single
 source of truth.
 
 ## 9. Dependency Architecture
+
+The engine is layered so that shared logic has exactly one home and the
+visualization layer stays lightweight.
+
+### Module map
+
+```
+src/
+├── data/loader.py           fetch_prices / prices_to_returns
+├── var/
+│   ├── _utils.py            _clean / _min_obs / violations (shared, scipy-free)
+│   ├── historical.py        historical-simulation VaR/ES
+│   └── parametric.py        normal + Student-t VaR/ES (closed form)
+├── backtest/var_backtest.py Kupiec POF / Christoffersen / Basel traffic-light
+├── stress/scenarios.py      GFC 2008 / COVID 2020 stress scenarios
+└── report/plots.py          monochrome visualization (scipy-free)
+```
+
+### Dependency structure
+
+```
+var._utils          (scipy-free leaf: _clean, _min_obs, violations)
+    ↑                   ↑               ↑
+var.historical   var.parametric    stress.scenarios    report.plots
+                      ↑
+               var_backtest  (only scipy importer in the engine layer)
+```
+
+`var._utils` is the single source of truth for the shared logic used across
+modules — `_clean`, `_min_obs`, and the strict `violations` definition (§8).
+Every layer routes through it rather than re-deriving these, so the statistics
+and the visualizations can never diverge.
+
+`report.plots` is intentionally scipy-free: importing it does not pull scipy,
+keeping the visualization layer lightweight. `var_backtest` is the only module
+in the engine layer that imports scipy (for the chi-square survival function
+used by the Kupiec, Christoffersen, and conditional-coverage p-values).

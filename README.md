@@ -43,6 +43,41 @@ the statistics and the visualisations can never diverge.
 
 ---
 
+## Architecture
+
+### Module map
+
+```
+src/
+├── data/loader.py           fetch_prices / prices_to_returns
+├── var/
+│   ├── _utils.py            _clean / _min_obs / violations (shared, scipy-free)
+│   ├── historical.py        historical-simulation VaR/ES
+│   └── parametric.py        normal + Student-t VaR/ES (closed form)
+├── backtest/var_backtest.py Kupiec POF / Christoffersen / Basel traffic-light
+├── stress/scenarios.py      GFC 2008 / COVID 2020 stress scenarios
+└── report/plots.py          monochrome visualization (scipy-free)
+```
+
+### Dependency structure
+
+```
+var._utils          (scipy-free leaf: _clean, _min_obs, violations)
+    ↑                   ↑               ↑
+var.historical   var.parametric    stress.scenarios    report.plots
+                      ↑
+               var_backtest  (only scipy importer in the engine layer)
+```
+
+`report.plots` is intentionally scipy-free: importing it does not pull
+scipy, keeping the visualization layer lightweight. `var._utils` is the
+single source of truth for shared logic used across modules.
+
+For the full rationale behind every non-obvious design choice, see
+[DESIGN.md](docs/DESIGN.md).
+
+---
+
 ## Mathematical definitions
 
 ### Sign convention

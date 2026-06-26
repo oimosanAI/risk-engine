@@ -37,6 +37,40 @@
 
 ---
 
+## アーキテクチャ
+
+### モジュールマップ
+
+```
+src/
+├── data/loader.py           fetch_prices / prices_to_returns
+├── var/
+│   ├── _utils.py            _clean / _min_obs / violations (shared, scipy-free)
+│   ├── historical.py        historical-simulation VaR/ES
+│   └── parametric.py        normal + Student-t VaR/ES (closed form)
+├── backtest/var_backtest.py Kupiec POF / Christoffersen / Basel traffic-light
+├── stress/scenarios.py      GFC 2008 / COVID 2020 stress scenarios
+└── report/plots.py          monochrome visualization (scipy-free)
+```
+
+### 依存構造
+
+```
+var._utils          (scipy-free leaf: _clean, _min_obs, violations)
+    ↑                   ↑               ↑
+var.historical   var.parametric    stress.scenarios    report.plots
+                      ↑
+               var_backtest  (only scipy importer in the engine layer)
+```
+
+`report.plots` は意図的に scipy 非依存です。インポートしても scipy を引き込まず、
+可視化層を軽量に保ちます。`var._utils` はモジュール間で共有されるロジックの
+単一の真実の源（single source of truth）です。
+
+すべての非自明な設計判断の根拠については、[DESIGN.md](docs/DESIGN.md) を参照してください。
+
+---
+
 ## 数学的定義
 
 ### 符号の規約
